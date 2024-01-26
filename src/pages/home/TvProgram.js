@@ -103,7 +103,9 @@ const ChannelCard = ({ channel }) => {
   });
   const programsData =
     programData &&
-    programData.filter((program) => new Date(program.endTime) > new Date());
+    programData.filter((program) =>
+      dayjs(new Date(program.endTime)).add(1, "hour").isAfter(dayjs()),
+    );
   return (
     programsData && (
       <Stack>
@@ -122,14 +124,14 @@ const ProgramCard = ({ program }) => {
       <Text weight={500}>{program.title}</Text>
       <Text size="sm">
         {/*{program.startTime} - {program.endTime}*/}
-        {dayjs(program.startTime).format("HH:mm")} -{" "}
-        {dayjs(program.endTime).format("HH:mm")}
+        {dayjs(program.startTime).add(1, "hour").format("HH:mm")} -{" "}
+        {dayjs(program.endTime).add(1, "hour").format("HH:mm")}
       </Text>
       <Text size="sm">
         {program.category} | {program.genre}
       </Text>
-      {new Date() > new Date(program.startTime) &&
-        new Date() < new Date(program.endTime) && (
+      {dayjs(new Date(program.startTime)).add(1, "hour").isBefore(dayjs()) &&
+        dayjs(new Date(program.endTime)).add(1, "hour").isAfter(dayjs()) && (
           <Badge color="red" variant="outline" w={"fit-content"}>
             Live
           </Badge>

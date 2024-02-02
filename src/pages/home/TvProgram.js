@@ -15,7 +15,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import dayjs from "dayjs";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaPlus } from "react-icons/fa";
 
 const divideListIntoChunks = (list, chunkSize) => {
   const chunks = [];
@@ -29,6 +29,13 @@ const fetchAllChannels = async () => {
   console.log("Channels:", result.data);
   return result.data;
 };
+
+const addToWatchlist = async (programId) => {
+  const response = await axios.post(
+    `http://localhost:8081/${programId}/watchlist`,
+  );
+};
+
 export default function TvProgram(options) {
   const [chunks, setChunks] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -119,6 +126,10 @@ const ChannelCard = ({ channel }) => {
 };
 
 const ProgramCard = ({ program }) => {
+  const handleAddToWatchlist = () => {
+    addToWatchlist(program.id);
+  };
+
   return (
     <Card shadow="sm" p="lg">
       <Text weight={500}>{program.title}</Text>
@@ -136,6 +147,9 @@ const ProgramCard = ({ program }) => {
             Live
           </Badge>
         )}
+      <ActionIcon onClick={handleAddToWatchlist}>
+        <FaPlus />
+      </ActionIcon>
     </Card>
   );
 };

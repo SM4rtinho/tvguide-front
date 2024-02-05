@@ -19,12 +19,14 @@ import WatchList from "./pages/watchlist/WatchList";
 import Logout from "./pages/logout/Logout";
 import Recommendations from "./pages/recommendations/Recommandations";
 import Notifications from "./pages/notifications/Notifications";
+import VSearch from "./pages/search/VSearch";
+import MyChannels from "./pages/my-channels/MyChannels";
+import MyTvProgram from "./pages/home/MyTvProgram";
 
 const queryClient = new QueryClient();
 
 function App() {
   const { me, user } = useAuth();
-  console.log(user);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -41,6 +43,9 @@ function App() {
         <Routes>
           <Route path="/" element={<UserOutlet />}>
             <Route path="/" element={<TvProgram />} />
+            <Route path="/my" element={<MyTvProgram />} />
+            <Route path="/search" element={<VSearch />} />
+            <Route path="/my-channels" element={<MyChannels />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/watch-list" element={<WatchList />} />
             <Route path="/recommendations" element={<Recommendations />} />

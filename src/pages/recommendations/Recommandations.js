@@ -53,7 +53,6 @@ const Recommendations = () => {
       const response = await axios.post(
         `http://localhost:8081/${programId}/watchlist`,
       );
-      console.log("Add program to watchlist:", programId);
     } catch (error) {
       console.error("Error adding program to watchlist", error);
     }

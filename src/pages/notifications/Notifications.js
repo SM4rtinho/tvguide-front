@@ -16,13 +16,11 @@ const Notifications = () => {
         },
         onopen(res) {
           if (res.ok && res.status === 200) {
-            console.log("Connection made ", res);
           } else if (
             res.status >= 400 &&
             res.status < 500 &&
             res.status !== 429
           ) {
-            console.log("Client side error ", res);
           }
         },
       });

@@ -29,7 +29,11 @@ const divideListIntoChunks = (list, chunkSize) => {
   return chunks;
 };
 const fetchAllChannels = async () => {
-  const result = await axios.get("http://localhost:8081/channels/all");
+  const result = await axios.get("http://localhost:8081/channels/all", {
+    params: {
+      isFavorite: true,
+    },
+  });
   console.log("Channels:", result.data);
   return result.data;
 };

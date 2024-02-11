@@ -87,16 +87,16 @@ export const VSearchFilter = () => {
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Group noWrap>
-          <TextInput w={"100%"} placeholder="Search" {...register("title")} />
+          <TextInput w={"100%"} placeholder="Szukaj" {...register("title")} />
           <Select
-            placeholder={"Select channel"}
+            placeholder={"Kanał"}
             data={allChannels}
             onChange={(value) => {
               setValue("channelIds", value.toString());
             }}
           />
           <Select
-            placeholder={"Select category"}
+            placeholder={"Kategoria"}
             data={
               categories
                 ? categories?.map((category) => {
@@ -110,7 +110,7 @@ export const VSearchFilter = () => {
           />
 
           <Select
-            placeholder={"Select genre"}
+            placeholder={"Gatunek"}
             data={
               genres
                 ? genres.map((genre) => {
@@ -123,7 +123,7 @@ export const VSearchFilter = () => {
             }}
           />
           <Button type={"submit"} w={"fit"} variant="light">
-            Search
+            Szukaj
           </Button>
         </Group>
       </form>

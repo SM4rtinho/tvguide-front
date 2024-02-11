@@ -22,6 +22,7 @@ import Notifications from "./pages/notifications/Notifications";
 import VSearch from "./pages/search/VSearch";
 import MyChannels from "./pages/my-channels/MyChannels";
 import MyTvProgram from "./pages/home/MyTvProgram";
+import EditUser from "./pages/edit/EditUser";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/watch-list" element={<WatchList />} />
             <Route path="/recommendations" element={<Recommendations />} />
+            <Route path="/edit-profile" element={<EditUser />} />
             <Route path="/logout" element={<Logout />} />
           </Route>
 

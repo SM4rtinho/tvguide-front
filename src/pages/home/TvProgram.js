@@ -137,7 +137,7 @@ const ChannelCard = ({ channel }) => {
   const programsData =
     programData &&
     programData.filter((program) =>
-      dayjs(new Date(program.endTime)).add(1, "hour").isAfter(dayjs()),
+      dayjs(new Date(program.endTime)).isAfter(dayjs()),
     );
   console.log(programData);
   if (!programsData) {
@@ -204,16 +204,16 @@ const ProgramCard = ({ program }) => {
       <Text weight={500}>{program.title}</Text>
       <Text size="sm">
         {/*{program.startTime} - {program.endTime}*/}
-        {dayjs(program.startTime).add(1, "hour").format("HH:mm")} -{" "}
-        {dayjs(program.endTime).add(1, "hour").format("HH:mm")}
+        {dayjs(program.startTime).format("HH:mm")} -{" "}
+        {dayjs(program.endTime).format("HH:mm")}
       </Text>
       <Text size="sm">
         {program.category} | {program.genre}
       </Text>
-      {dayjs(new Date(program.startTime)).add(1, "hour").isBefore(dayjs()) &&
-        dayjs(new Date(program.endTime)).add(1, "hour").isAfter(dayjs()) && (
+      {dayjs(new Date(program.startTime)).isBefore(dayjs()) &&
+        dayjs(new Date(program.endTime)).isAfter(dayjs()) && (
           <Badge color="red" variant="outline" w={"fit-content"}>
-            Live
+            Teraz
           </Badge>
         )}
       <Group position={"center"} mt={"lg"}>
@@ -226,13 +226,17 @@ const ProgramCard = ({ program }) => {
             <TbMinus />
           </ActionIcon>
         )}
-        <ActionIcon
-          color={program.isLiked ? "red" : "gray"}
-          onClick={program.isLiked ? handleDislikeProgram : handleLikeProgram}
-          variant={program.isLiked ? "filled" : "outline"}
-        >
-          <TbHeart />
-        </ActionIcon>
+
+        <Group spacing={"xs"}>
+          <ActionIcon
+            color={program.isLiked ? "red" : "gray"}
+            onClick={program.isLiked ? handleDislikeProgram : handleLikeProgram}
+            variant={program.isLiked ? "filled" : "outline"}
+          >
+            <TbHeart />
+          </ActionIcon>
+          <Badge color={"gray"}>{program.numberOfLikes.toString()}</Badge>
+        </Group>
       </Group>
     </Card>
   );

@@ -1,67 +1,182 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Text, Title, Group, Button } from "@mantine/core";
+import {
+  Card,
+  Text,
+  Title,
+  Group,
+  Button,
+  Image,
+  Stack,
+  Badge,
+  ActionIcon,
+} from "@mantine/core";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FaPlus } from "react-icons/fa";
+import { TbHeart, TbMinus } from "react-icons/tb";
 
 dayjs.extend(localizedFormat);
 
-const ProgramCard = ({ program, onAddToWatchlist }) => {
+const addToWatchlist = async (programId) => {
+  const response = await axios.post(
+    `http://localhost:8081/programs/${programId}/watchlist`,
+  );
+};
+
+const removeFromWatchlist = async (programId) => {
+  const response = await axios.delete(
+    `http://localhost:8081/watchlist/${programId}/remove`,
+  );
+};
+
+const likeProgram = async (programId) => {
+  const response = await axios.post(
+    `http://localhost:8081/programs/${programId}/like`,
+  );
+};
+
+const dislikeProgram = async (programId) => {
+  const response = await axios.post(
+    `http://localhost:8081/programs/${programId}/dislike`,
+  );
+};
+
+const ProgramCard = ({ program, onRemove }) => {
   const startTime = dayjs(program.startTime).format("dddd, HH:mm");
   const endTime = dayjs(program.endTime).format("HH:mm");
 
+  const queryClient = useQueryClient();
+
+  const mutationAddToWatchlist = useMutation(addToWatchlist, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("watchlist");
+    },
+  });
+
+  const mutationRemoveFromWatchlist = useMutation(removeFromWatchlist, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("recommended");
+    },
+  });
+
+  const mutationLikeProgram = useMutation(likeProgram, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("recommended");
+    },
+  });
+
+  const mutationDislikeProgram = useMutation(dislikeProgram, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("recommended");
+    },
+  });
+
+  const handleAddToWatchlist = () => {
+    mutationAddToWatchlist.mutate(program.id);
+  };
+
+  const handleRemoveFromWatchlist = () => {
+    mutationRemoveFromWatchlist.mutate(program.id);
+  };
+
+  const handleLikeProgram = () => {
+    mutationLikeProgram.mutate(program.id);
+  };
+
+  const handleDislikeProgram = () => {
+    mutationDislikeProgram.mutate(program.id);
+  };
   return (
-    <Card shadow="sm" p="lg" mb="md">
-      <Group position="apart" align="center">
-        <div>
-          <Title order={5}>{program.title}</Title>
-          <Text size="sm">
-            {program.channel.name} | {startTime} - {endTime}
+    <Card withBorder radius="md" p={0}>
+      <Group noWrap gap={0}>
+        <Image src={program.photo} height={160} maw={250} />
+        <Stack>
+          <Text tt="uppercase" c="dimmed" fw={700} size="xs">
+            {program.genre}
           </Text>
-          <Text size="sm">
-            {program.category} | {program.genre}
+          <Text mt="xs" mb="md">
+            {program.title} ( {program.productionYear} )
           </Text>
-        </div>
-        <Button size="xs" onClick={() => onAddToWatchlist(program.id)}>
-          Add to Watchlist
-        </Button>
+
+          <Group gap="xs">
+            <Group gap="xs" wrap="nowrap">
+              <Badge size="xs">{program.channel.name}</Badge>
+            </Group>
+            <Text size="xs" c="dimmed">
+              {dayjs(program.startTime).format("dddd HH:mm")}
+            </Text>
+          </Group>
+        </Stack>
+        <Group position={"center"}>
+          {!program.isOnWatchlist ? (
+            <ActionIcon onClick={handleAddToWatchlist}>
+              <FaPlus />
+            </ActionIcon>
+          ) : (
+            <ActionIcon onClick={handleRemoveFromWatchlist}>
+              <TbMinus />
+            </ActionIcon>
+          )}
+          <ActionIcon
+            color={program.isLiked ? "red" : "gray"}
+            onClick={program.isLiked ? handleDislikeProgram : handleLikeProgram}
+            variant={program.isLiked ? "filled" : "outline"}
+          >
+            <TbHeart />
+          </ActionIcon>
+          <Badge color={"gray"}>{program.numberOfLikes.toString()}</Badge>
+        </Group>
       </Group>
     </Card>
   );
 };
 
-const Recommendations = () => {
-  const [recommendations, setRecommendations] = useState([]);
+const getRecommended = async () => {
+  const response = await axios.get(
+    "http://localhost:8081/recommended-programs",
+  );
+  return response.data;
+};
 
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8081/recommended-programs",
-        );
-        setRecommendations(response.data);
-      } catch (error) {
-        console.error("Error fetching recommendations", error);
-      }
-    };
+const Recommended = () => {
+  // const [recommended, setWatchlist] = useState([]);
+  //
+  // useEffect(() => {
+  //   const fetchWatchlist = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:8081/programs/watchlist",
+  //       );
+  //       setWatchlist(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching recommended", error);
+  //     }
+  //   };
+  //
+  //   fetchWatchlist();
+  // }, []);
 
-    fetchRecommendations();
-  }, []);
+  const queryClient = useQueryClient();
+  const { data: recommended } = useQuery({
+    queryKey: "recommended",
+    queryFn: getRecommended,
+  });
 
-  const handleAddToWatchlist = async (programId) => {
+  const handleRemove = async (programId) => {
     try {
-      const response = await axios.post(
-        `http://localhost:8081/${programId}/watchlist`,
-      );
+      await axios.delete(`http://localhost:8081/watchlist/${programId}/remove`);
+      queryClient.invalidateQueries("recommended");
     } catch (error) {
-      console.error("Error adding program to watchlist", error);
+      console.error("Error removing program from recommended", error);
     }
   };
 
-  if (!recommendations || recommendations.length === 0) {
+  if (!recommended || recommended.length === 0) {
     return (
       <Card shadow="sm" padding="lg">
-        <Text align="center">There are no recommendations at this time.</Text>
+        <Text align="center">No recommendations at this time.</Text>
       </Card>
     );
   }
@@ -69,17 +184,17 @@ const Recommendations = () => {
   return (
     <div>
       <Title order={2} my="lg" align="center">
-        Recommended for You
+        Rekomendowane programy
       </Title>
-      {recommendations.map((program) => (
+      {recommended.map((program) => (
         <ProgramCard
           key={program.id}
           program={program}
-          onAddToWatchlist={handleAddToWatchlist}
+          onRemove={handleRemove}
         />
       ))}
     </div>
   );
 };
 
-export default Recommendations;
+export default Recommended;

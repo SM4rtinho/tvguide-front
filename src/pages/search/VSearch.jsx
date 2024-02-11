@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import { SearchPrograms } from "./SearchPrograms";
 import { VSearchFilter } from "./VSearchFilter";
 import { useSearchParams } from "react-router-dom";
+import Pagination from "./Pagination";
 
 const getPrograms = async ({ queryKey }) => {
   const [_key, params] = queryKey;
@@ -39,6 +40,7 @@ const VSearch = () => {
     <Stack spacing={"md"} p={"lg"}>
       <VSearchFilter />
       <SearchPrograms content={data} />
+      <Pagination totalPages={data.totalPages} />
     </Stack>
   );
 };

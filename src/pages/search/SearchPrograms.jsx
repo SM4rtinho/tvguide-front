@@ -14,6 +14,7 @@ import { FaPlus } from "react-icons/fa";
 import { TbHeart, TbMinus } from "react-icons/tb";
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Pagination from "./Pagination";
 
 const addToWatchlist = async (programId) => {
   const response = await axios.post(
@@ -59,6 +60,7 @@ export const SearchPrograms = ({ content }) => {
           productionYear={data.productionYear}
           isOnWatchlist={data.isOnWatchlist}
           isLiked={data.isLiked}
+          numberOfLikes={data.numberOfLikes}
         />
       ))}
     </SimpleGrid>
@@ -75,6 +77,7 @@ const ProgramCard = ({
   productionYear,
   isOnWatchlist,
   isLiked,
+  numberOfLikes,
 }) => {
   const queryClient = useQueryClient();
   const mutationAddToWatchlist = useMutation(addToWatchlist, {
@@ -154,6 +157,7 @@ const ProgramCard = ({
           >
             <TbHeart />
           </ActionIcon>
+          <Badge color={"gray"}>{numberOfLikes.toString()}</Badge>
         </Group>
       </Group>
     </Card>

@@ -104,6 +104,7 @@ const ProgramCard = ({ program, onRemove }) => {
           >
             <TbHeart />
           </ActionIcon>
+          <Badge color={"gray"}>{program.numberOfLikes.toString()}</Badge>
         </Group>
       </Group>
     </Card>
@@ -159,7 +160,7 @@ const WatchList = () => {
   return (
     <div>
       <Title order={2} my="lg" align="center">
-        Your Watchlist
+        Twoja lista do obejrzenia
       </Title>
       {watchlist.map((program) => (
         <ProgramCard
